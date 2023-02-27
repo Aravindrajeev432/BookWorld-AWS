@@ -1,0 +1,58 @@
+{% extends 'index.html' %}
+{%load static %}
+
+{% block content %}
+<div class="container-fluid box1">
+    <div class="row">
+        <div class="col-md-12 logbigbox">
+    <div class="col-md-5  logbox">
+        <div class="col-md-11 sublogbox">
+            <div class="row">
+                <div class="col-12 mb-3 d-flex justify-content-center">
+                    <span class="adminpanelsubhead">
+                        REGISTER HERE
+                    </span>
+                </div>
+            </div>
+            <form action=" " method="POST" id="regform">
+                {% csrf_token %}
+                <input type="text" name="firstname" id="firstname_id" placeholder="First name" class="form-control rounded-0 border-0 border-bottom" onkeyup="validateFName()">
+                <span id="fname-error" class="text-muted"></span><br>
+                <input type="text" name="lastname" id="lastname_id" placeholder="Last name" class="form-control rounded-0 border-0 border-bottom" onkeyup="validateLName()">
+                <span id="lname-error" class="text-muted"></span><br>
+                <input type="number" name="phone" id="phone_id" placeholder="Phone" class="form-control rounded-0 border-0 border-bottom" onkeyup="validatePhone()">
+                <span id="phone-error" class="text-muted"></span><br>
+                <input type="email" name="email" id="email_id" placeholder="Email"  class="form-control rounded-0 border-0 border-bottom" onkeyup="validateEmail()">
+                <span id="email-error" class="text-muted"></span><br>
+                <input type="password" name="password1" id="password1_id" placeholder="Password" class="form-control rounded-0 border-0 border-bottom" onkeyup="validatePass1()">
+                <span id="password1-error" class="text-muted"></span><br>
+
+                <input type="password" name="password2" id="password2_id" placeholder="Confirm Password" class="form-control rounded-0 border-0 border-bottom" onfocusout="validatePass2()" onfocus="validatePass2focus()"  >
+                <span id="password2-error" class="text-muted"></span><br>
+                <div class="row mt-2">
+                    <div class="col-12 d-flex flex-column  justify-content-center ">
+                        <div class="row d-flex justify-content-center">
+                <button type="submit" class="btn bg-secondary text-warning rounded-0" onclick="return validateForm()" style="width:144px;">Sign Up</button>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                                
+                <span id="btn-Error" class="text-muted text-center"></span>
+                        </div>
+                </div>
+            </div>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<script src="{% static 'script.js' %}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    {% for msg in messages%}
+    Swal.fire('{{msg}}', '', 'error')
+    {% endfor  %}
+</script>
+{% endblock %}
