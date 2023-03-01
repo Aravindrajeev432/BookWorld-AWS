@@ -40,13 +40,13 @@ def place_order(request, total=0, quantity=0, cart_items=None):
     try:
         if 'uid' in request.session:
             uid = request.session['uid']
-            cart_items = CartItem.objects.filter(user_id=uid, is_active=True)
+            cart_items = CartItem.objects.filter(user_id=uid, is_active=True).select_related('product', 'product__category')
             cart_count = cart_items.count()
             if cart_count <= 0:
                 return redirect('home')
         else:
             cart = Cart.objects.get(cart_id=_cart_id(request))
-            cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+            cart_items = CartItem.objects.filter(cart=cart, is_active=True).select_related('product', 'product__category')
 
         for cart_item in cart_items:
             total += (cart_item.total_after_discount)

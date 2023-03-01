@@ -35,17 +35,14 @@ def cart(request, total=0, quantity=0, cart_items=None):
                 quantity += cart_item.quantity
 
                 try:
-                    prod_discount = Product_Offer.objects.get(
-                        product_id=cart_item.product_id)
+                    prod_discount = Product_Offer.objects.get(product_id=cart_item.product_id)
 
-                    p_o_d.update(
-                        {prod_discount.product_id: prod_discount.discount})
+                    p_o_d.update({prod_discount.product_id: prod_discount.discount})
                 except BaseException:
                     pass
                 try:
 
-                    cat_discount = Category_Offer.objects.get(
-                        category_id=cart_item.product.category_id)
+                    cat_discount = Category_Offer.objects.get(category_id=cart_item.product.category_id)
                     c_o_d.update(
                         {cat_discount.category_id: cat_discount.discount})
                 except BaseException:
@@ -69,7 +66,7 @@ def cart(request, total=0, quantity=0, cart_items=None):
             cart = Cart.objects.get(cart_id=_cart_id(request))
             cart_id = cart.id
             cart_items = CartItem.objects.filter(
-                cart=cart, is_active=True).select_related('product')
+                cart=cart, is_active=True).select_related('product').select_related('product', 'product__category')
 
             for cart_item in cart_items:
                 total += (cart_item.product.price * cart_item.quantity)
