@@ -175,12 +175,8 @@
                                         <td>{{ p.author }}</td>
                                         <td>{{ p.price }}</td>
                                         <td>
-                                            {% for i in cat %}
-                                                {% if p.category_id == i.id %}
-                                                    {{ i.category_name }}
-
-                                                {% endif %}
-                                            {% endfor %}
+                                            {{ p.category.category_name }}
+                                           
                                         </td>
                                         <td>{{ p.book_count }}</td>
                                         <td>

@@ -55,7 +55,7 @@
                                     <div class="col-md-12 col-sm-12 col-12 ">
                                         <div class="row">
                                             {% for wishlist in wishlistitems %}
-                                                {% if category.id == wishlist.product.category.id %}
+                                                {% if category.id == wishlist.product.category_id %}
 
                                                 <div class="col-md-4 col-sm-12 col-12 d-flex justify-content-center">
 
@@ -143,10 +143,10 @@
                                                                                 <span class="productprice">₹{{wishlist.product.price }}</span>&nbsp<span class="text-secondary">
                                                                                     <sub>
                     
-                                                                                        {% if wishlist.product.id in product_offer_details %}
+                                                                                        {% if wishlist.product_id in product_offer_details %}
                                                                                   
                                                                                         {% for key,value in product_offer_details.items %}
-                                                                                        {% if key == wishlist.product.id %}
+                                                                                        {% if key == wishlist.product_id %}
                                                                                         {{value}}%*OFF On this product
                                                                                         {% endif %}
                                                                                         {% endfor %}

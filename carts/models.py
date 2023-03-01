@@ -24,5 +24,3 @@ class CartItem(models.Model):
     coupon=models.ForeignKey(Coupon,on_delete=models.CASCADE,null=True)
     def sub_total(self):
         return self.product.price * self.quantity
-    def __str__(self):
-        return self.product.book_name
