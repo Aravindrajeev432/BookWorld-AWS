@@ -1,18 +1,16 @@
 
-
+from django.db.models import Sum, Q
+from django.views.decorators.cache import cache_control
+from django.http import HttpResponse
+from django.template.loader import get_template
 from django.shortcuts import render, redirect
+
 from admins.views import dashboard
 from orders.models import Payment
 from orders.models import Order
 from store.models import Product
 from orders .models import OrderProduct
-from django.db.models import Sum
 
-from django.views.decorators.cache import cache_control
-from django.db.models import Q
-from django.http import HttpResponse
-
-from django.template.loader import get_template
 
 from xhtml2pdf import pisa
 

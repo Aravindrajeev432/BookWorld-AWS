@@ -1,31 +1,31 @@
+from datetime import date
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.cache import cache_control
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum
 from django.http import HttpResponse
-from accounts.models import Address
-from accounts.models import Account
-from orders.models import Order
-from store.models import Coupon
-from . models import Cart, CartItem
-from store.models import Product
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.cache import cache_control
-from store.models import Product_Offer, Category_Offer
-# Create your views here.
-from datetime import date
 from django.db.models import Q
+
+
+from accounts.models import Address, Account
+from orders.models import Order
+from . models import Cart, CartItem
+from store.models import Product_Offer, Category_Offer, Product, Coupon
+
 
 
 def cart(request, total=0, quantity=0, cart_items=None):
 
     if 'first_name' in request.session:
-        print("25")
+
         # product_offer_details=Product_Offer.objects.all()
         p_o_d = {}
         c_o_d = {}
         # product offer details
         try:
             uid = request.session['uid']
-            print("23")
+
             user = request.user
             # cart_items=CartItem.objects.filter(user=user,is_active=True)
             cart_items = CartItem.objects.filter(Q(user_id=uid) & Q(is_active=True)).order_by(
@@ -43,7 +43,6 @@ def cart(request, total=0, quantity=0, cart_items=None):
                 except BaseException:
                     pass
                 try:
-                    print("category id")
 
                     cat_discount = Category_Offer.objects.get(
                         category_id=cart_item.product.category_id)
@@ -71,13 +70,12 @@ def cart(request, total=0, quantity=0, cart_items=None):
             cart_id = cart.id
             cart_items = CartItem.objects.filter(
                 cart=cart, is_active=True).select_related('product')
-            print("70")
 
             for cart_item in cart_items:
                 total += (cart_item.product.price * cart_item.quantity)
                 quantity += cart_item.quantity
         except ObjectDoesNotExist:
-            print("74")
+
             pass
             cart_id = ""
         context = {
@@ -124,7 +122,7 @@ def add_cart(request, product_id):
             total_after_discount = product.price - \
                 ((discount_rate / 100) * product.price)
     except BaseException:
-        print("99")
+
         try:
             if cat_discount_rate:
                 try:
@@ -153,9 +151,6 @@ def add_cart(request, product_id):
                 discount_type = "none"
                 total_after_discount = product.price
 
-    print(discount_rate)
-    print(type(product))
-    print("dkfsdfsdf")
     try:
         if 'uid' in request.session:
             pass
@@ -203,9 +198,8 @@ def add_cart(request, product_id):
 
 
 def add_cart_from_cart(request, product_id):
-    print("add_cart_from_cart")
+
     product = Product.objects.get(id=product_id)
-    print(type(product))
 
     try:
         if 'uid' in request.session:
@@ -268,9 +262,7 @@ def cart_total_finder(request, id):
         total = CartItem.objects.filter(
             cart_id=id).aggregate(
             Sum('total_after_discount'))
-        print(total)
-        for s in total:
-            print(s)
+
         return HttpResponse(total['total_after_discount__sum'])
 
 
@@ -332,20 +324,17 @@ def delete_cart(request, product_id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def checkout(request, total=0, quantity=0, cart_items=None):
-    print("checkout")
 
     try:
         if 'uid' in request.session:
             uid = request.session['uid']
-            print("trycart")
+
             ca_count = CartItem.objects.filter(
                 user_id=uid, is_active=True).count()
             cart_items = CartItem.objects.filter(user_id=uid, is_active=True)
 
-            print("*****")
             # checking for empty queryset
 
-            print(ca_count)
             if ca_count == 0:
                 return redirect('home')
         else:
@@ -355,21 +344,18 @@ def checkout(request, total=0, quantity=0, cart_items=None):
             total += (cart_item.total_after_discount)
             quantity += cart_item.quantity
 
-            print("total multi")
         if total == 0:
             return redirect('index')
         try:
             coupon_discount = request.session['coupon_discount']
-            print(coupon_discount)
-            print("***")
+
             if coupon_discount == 0:
                 discount = 0
                 total_after_coupon = total
             else:
                 discount = request.session['coupon_discount']
                 total_after_coupon = total - discount
-                print(total_after_coupon)
-                print("##")
+
         except BaseException:
             discount = 0
             total_after_coupon = total
@@ -379,19 +365,18 @@ def checkout(request, total=0, quantity=0, cart_items=None):
 
     try:
         user_details = Account.objects.get(id=uid)
-        print("try user_details")
-        print(user_details)
+
     except BaseException:
-        print("except user details")
+
         user_details = " "
     try:
         user_address = Address.objects.get(user_id=uid)
-        print("try useraddress")
+
         user_address_status = True
-        print(user_address)
+
     except BaseException:
         user_address = ""
-        print("except useraddress")
+
         user_address_status = False
 
     context = {
@@ -408,7 +393,6 @@ def checkout(request, total=0, quantity=0, cart_items=None):
 
 
 def couponCheck(request, coupon):
-    print(coupon)
 
     try:
         coupon_details = Coupon.objects.get(coupon_code=coupon)
@@ -417,43 +401,38 @@ def couponCheck(request, coupon):
         request.session['coupon_discount'] = discount
         request.session['coupon_code'] = coupon
         request.session['coupon_id'] = coupon_details.id
-        print("412 try succes")
+
     except BaseException:
-        print("413 with exception")
+
         discount = 0
         request.session['coupon_discount'] = 0
         request.session['coupon_code'] = ""
         request.session['coupon_id'] = ""
 
     coupon_count = Coupon.objects.filter(coupon_code__exact=coupon).count()
-    print(coupon_count)
+
     if coupon_count == 1:
         coupon_details = Coupon.objects.get(coupon_code=coupon)
-        print(coupon_details)
+
         current_date = date.today()
-        print(current_date)
-        print(coupon_details.valid_to.date())
-        print(coupon_details.valid_from.date())
+
         if current_date <= coupon_details.valid_to.date(
         ) and current_date >= coupon_details.valid_from.date():
-            print("393")
+
             uid = request.session['uid']
             if Order.objects.filter(Q(user_id=uid) & Q(
                     coupon_id=coupon_details.id) & Q(is_ordered=True)).exists():
                 discount = 0
-                print("396")
+
                 return HttpResponse(discount)
             else:
-                print("437")
-                print(discount)
-                print(coupon_details.valid_to)
-                print(coupon_details.valid_from)
+
                 return HttpResponse(discount)
         else:
-            print("439")
+
             discount = 0
             return HttpResponse(discount)
     else:
-        print("443")
+
         discount = 0
         return HttpResponse(discount)

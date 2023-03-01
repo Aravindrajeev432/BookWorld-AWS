@@ -1,28 +1,33 @@
+
+import datetime
 import json
 from logging import exception
+from datetime import date
+
 from django.shortcuts import render, redirect
+from django.template.loader import get_template
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.cache import cache_control
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Q, F
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+
+import razorpay
+from openexchangerate import OpenExchangeRates
+from xhtml2pdf import pisa
+
+
+
+from carts.views import _cart_id
+from .forms import OrderForm
+from .models import Order, Payment, OrderProduct, Return_Products 
 from store.models import Coupon
 from carts.models import Cart, CartItem
 from store.models import Product
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.cache import cache_control
-from carts.views import _cart_id
-from .forms import OrderForm
-from .models import Order, Payment, OrderProduct, Return_Products
-import datetime
-import json
-from django.db.models import Sum
-from django.http import HttpResponse, JsonResponse
-import razorpay
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-from django.http import HttpResponseBadRequest
-from datetime import date
-from django.db.models import Q, F
-from openexchangerate import OpenExchangeRates
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-from django.contrib.auth.decorators import login_required
+
+
 # Create your views here.
 
 
@@ -48,8 +53,8 @@ def place_order(request, total=0, quantity=0, cart_items=None):
             quantity += cart_item.quantity
         try:
             coupon_discount = request.session['coupon_discount']
-            print(coupon_discount)
-            print("***")
+         
+      
             if coupon_discount == 0:
                 discount = 0
                 total_after_coupon = total
@@ -59,8 +64,7 @@ def place_order(request, total=0, quantity=0, cart_items=None):
                 coupon_details = Coupon.objects.get(id=id)
                 discount = request.session['coupon_discount']
                 total_after_coupon = total - discount
-                print(total_after_coupon)
-                print("##")
+          
         except BaseException:
             discount = 0
             total_after_coupon = total
@@ -79,7 +83,7 @@ def place_order(request, total=0, quantity=0, cart_items=None):
 
     if request.method == 'POST':
         payment_method = request.POST['payment_method']
-        print(payment_method)
+      
         if payment_method == "Paypal":
             print("paypalworked")
             form = OrderForm(request.POST)

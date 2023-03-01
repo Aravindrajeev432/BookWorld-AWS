@@ -1,11 +1,20 @@
+import datetime
 
-
+from django.contrib import auth, messages
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.db.models import Sum, Count
+from django.template.loader import get_template
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_control
-from django.core.exceptions import ObjectDoesNotExist
+
+from xhtml2pdf import pisa
+import xlwt
+
+
 from accounts.models import Account
 from accounts.views import user_login
 from orders.models import Payment
@@ -13,17 +22,6 @@ from orders.models import Order, OrderProduct, Return_Products, banner
 from store.models import Product, Product_Offer, Category_Offer, Coupon
 from category.models import Category
 from store.forms import ProductForm
-# from category.forms import category_form
-from django.contrib import auth, messages
-# from slugify import slugify
-from django.core.paginator import Paginator
-from django.db.models import Q
-from django.db.models import Sum, Count
-from django.template.loader import get_template
-from django.http import Http404
-from xhtml2pdf import pisa
-import xlwt
-import datetime
 
 from .forms import BannerForm
 

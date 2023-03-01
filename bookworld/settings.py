@@ -33,11 +33,10 @@ CACHE_TTL = 60 * 15
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = config('DEBUG')
-DEBUG = True
+DEBUG = config('DEBUG')
+
 
 ALLOWED_HOSTS = ['www.bookworldstore.shop','.bookworldstore.shop','*']
-CSRF_TRUSTED_ORIGINS=['https://bookworldrailwayapp-production.up.railway.app']
 
 # Paypal
 ACCOUNT_SID=config("account_sid") 

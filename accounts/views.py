@@ -1,18 +1,16 @@
-
-
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_control
-from django.contrib import messages
-
+from django.conf import settings
+from django.contrib import messages, auth
+from django.contrib.auth import authenticate
 
 from carts.views import _cart_id
 from carts.models import Cart, CartItem
 from .models import Account
+
 from twilio.rest import Client
-from django.conf import settings
-from django.contrib import messages, auth
-from django.contrib.auth import authenticate
+
 # Create your views here.
 
 
@@ -71,9 +69,7 @@ def user_login(request):
 
                 )
         else:
-            print(user)
-
-            print("user is none")
+        
             return JsonResponse(
                 {'success': False
                  },
@@ -113,7 +109,7 @@ def register(request):
             return render(request, 'register.html')
 
         if Account.objects.filter(Phone_number=phone).exists():
-            print("107")
+        
             messages.error(request, 'This Phone number already in use')
             return render(request, 'register.html')
         if Account.objects.filter(email=email).exists():
@@ -142,11 +138,9 @@ def logout(request):
 def otp_verfication_send(request):
     if request.user.is_authenticated:
         return redirect('/')
-    print(request.user.is_authenticated)
+
     if request.method == 'POST':
         otp_number = request.POST['otp_phone']
-
-        print(otp_number)
 
         if Account.objects.filter(Phone_number=otp_number).exists():
             user = Account.objects.get(Phone_number=otp_number)
@@ -162,8 +156,7 @@ def otp_verfication_send(request):
             return render(
                 request, 'otp_verification.html', {
                     'Phone_number': otp_number, 'user': user, })
-        else:
-            print("fail")
+
     messages.info(request, 'invalid mobile number ! !')
     return redirect('login')
 
@@ -184,12 +177,12 @@ def otp_verification_check(request, Phone_number):
                 account_sid = settings.ACCOUNT_SID
                 auth_token = settings.AUTH_TOKEN
                 client = Client(account_sid, auth_token)
-                print("147")
+               
                 verification_check = client.verify \
                     .services(settings.SERVICE) \
                     .verification_checks \
                     .create(to=phone_no, code=otp_input)
-                print("152")
+              
                 if verification_check.status == "approved":
                     auth.login(request, user)
                     request.session['email'] = user.email

@@ -1,24 +1,19 @@
 
-
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.views.decorators.cache import cache_control
-from accounts.models import Account
-from carts.models import Cart
-from carts.models import CartItem
-from .models import Product, WishlistItem
-from category.models import Category
-from store.forms import ProductForm
-from orders.models import banner
-# from category.forms import category_form
-from django.contrib import auth, messages
-# from slugify import slugify
-from django.utils.text import slugify
-from django.core.paginator import Paginator
-from carts.views import _cart_id
 from django.db.models import Q
 from django.views.decorators.cache import cache_control
 from django.http import Http404
+from django.shortcuts import render, redirect
+from django.views.decorators.cache import cache_control
+from django.core.paginator import Paginator
+from django.contrib import  messages
+
+
+from carts.models import CartItem
+from .models import Product, WishlistItem
+from category.models import Category
+from orders.models import banner
+from carts.views import _cart_id
+
 # Create your views here.
 
 

@@ -1,17 +1,17 @@
+from collections import Counter
+
+from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from carts.models import Cart
-from accounts.models import Account, Address
-
-from store.models import WishlistItem
-from carts.models import CartItem
-from orders.models import OrderProduct, banner
-from store.models import Product, Product_Offer, Category_Offer
-from category.models import Category
 from django.views.decorators.cache import cache_control
 from django.core.paginator import Paginator
-from collections import Counter
-from django.db.models import Count
+
+from accounts.models import Account, Address
+from carts.models import CartItem, Cart
+from orders.models import OrderProduct, banner
+from store.models import Product, Product_Offer, Category_Offer, WishlistItem
+from category.models import Category
+
 from carts.views import _cart_id
 
 
@@ -20,7 +20,7 @@ def index(request):
     try:
         uid = request.session['uid']
         is_user_blocked = Account.objects.get(id=uid)
-        if is_user_blocked.is_blocked == True:
+        if is_user_blocked.is_blocked:
             return render(request, 'userblocked.html')
     except KeyError:
         uid = _cart_id(request)
@@ -51,7 +51,7 @@ def index(request):
 
         nonuser_cart_product_ids = []
     except BaseException:
-        print("33")
+
         user_cart_product_ids = []
         try:
 
@@ -149,11 +149,11 @@ def profile(request, id):
     fa_cat = user_details.ordered_product_user.all().select_related('product__category')
 
     for fav in fa_cat:
-        print(fav)
+
         f_cat.append(fav.product.category_id)
     if len(fa_cat) == 0:
-        
-         fav_category_name = "Please Buy At Least One Book"
+
+        fav_category_name = "Please Buy At Least One Book"
 
     else:
 
@@ -165,8 +165,6 @@ def profile(request, id):
 
         fav_category_name = fav_category.category_name
 
-
-   
     try:
         books_buyed = OrderProduct.objects.filter(
             user=id).values('user').annotate(
@@ -199,12 +197,6 @@ def add_address(request, id):
         state = request.POST['state']
         city = request.POST['city']
         zipcode = request.POST['zipcode']
-        print(address_line_1)
-        print(address_line_2)
-        print(country)
-        print(state)
-        print(city)
-        print(zipcode)
 
         try:
             user_address = Address.objects.get(user_id=uid)
@@ -278,7 +270,7 @@ def wishlist(request):
     try:
         uid = request.session['uid']
         is_user_blocked = Account.objects.get(id=uid)
-        if is_user_blocked.is_blocked == True:
+        if is_user_blocked.is_blocked:
             return render(request, 'userblocked.html')
     except KeyError:
         return redirect('login')
@@ -286,10 +278,9 @@ def wishlist(request):
         user_cart = CartItem.objects.filter(user=uid).all()
         user_cart_product_ids = []
         for uc in user_cart:
-          
+
             user_cart_product_ids.append(uc.product_id)
-  
-      
+
     except BaseException:
         user_cart_product_ids = []
     product_offer_details = {}
@@ -303,12 +294,18 @@ def wishlist(request):
     for catoffers in categoryoffers:
         category_offer_details.update(
             {catoffers.category_id: catoffers.discount})
-    wish = WishlistItem.objects.filter(user=uid).select_related('product','product__category')
+    wish = WishlistItem.objects.filter(
+        user=uid).select_related(
+        'product',
+        'product__category')
     wishlist = []
     for w in wish:
         wishlist.append(w.product_id)
     uid = request.session['uid']
-    wish = WishlistItem.objects.filter(user_id=uid).select_related('product','product__category')
+    wish = WishlistItem.objects.filter(
+        user_id=uid).select_related(
+        'product',
+        'product__category')
 
     category = Category.objects.all()
     context = {
@@ -322,7 +319,7 @@ def wishlist(request):
 
 
 def addwishlist(request, pid):
-    print(pid)
+
     uid = request.session['uid']
     user = Account.objects.get(id=uid)
     product = Product.objects.get(id=pid)
@@ -333,7 +330,7 @@ def addwishlist(request, pid):
 
 
 def removewishlist(request, pid):
-    print(pid)
+
     uid = request.session['uid']
     user = Account.objects.get(id=uid)
     product = Product.objects.get(id=pid)
