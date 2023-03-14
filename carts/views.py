@@ -30,6 +30,7 @@ def cart(request, total=0, quantity=0, cart_items=None):
             # cart_items=CartItem.objects.filter(user=user,is_active=True)
             cart_items = CartItem.objects.filter(Q(user_id=uid) & Q(is_active=True)).order_by(
                 'id').select_related('product', 'product__category')
+            
             for cart_item in cart_items:
                 total += (cart_item.total_after_discount)
                 quantity += cart_item.quantity
